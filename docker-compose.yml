@@ -1,0 +1,44 @@
+services:
+  ac-server:
+    build:
+      context: .
+      dockerfile: docker/ac-server/Dockerfile
+    container_name: ac-server
+    restart: always
+    ports:
+      - "9600:9600/tcp"
+      - "9600:9600/udp"
+      - "8082:8082/tcp" # AC HTTP port
+    volumes:
+      - ./configs:/data/configs # Source configs
+      - ./mods:/data/mods # Mods source
+      - ac_data:/ac-server # Persistent server data
+    environment:
+      - SERVER_NAME=AC_Docker_Server
+    networks:
+      - ac-network
+
+  web-ui:
+    build:
+      context: .
+      dockerfile: docker/web-ui/Dockerfile
+    container_name: ac-web-ui
+    restart: always
+    ports:
+      - "8081:5000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./configs:/data/configs
+    environment:
+      - SERVER_CONTAINER_NAME=ac-server
+    depends_on:
+      - ac-server
+    networks:
+      - ac-network
+
+volumes:
+  ac_data:
+
+networks:
+  ac-network:
+    driver: bridge

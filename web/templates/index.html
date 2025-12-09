@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AC Server Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="mb-4">Assetto Corsa Server Manager</h1>
+
+        <div class="card mb-4">
+            <div class="card-header">Status</div>
+            <div class="card-body">
+                <h5 class="card-title">Server Status: <span class="badge {% if status == 'running' %}bg-success{% else %}bg-danger{% endif %}">{{ status }}</span></h5>
+                <form action="/restart" method="post" class="mt-3">
+                    <button type="submit" class="btn btn-warning">Restart Server</button>
+                    <a href="/logs" class="btn btn-info">View Logs</a>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">Server Configuration</div>
+                    <div class="card-body">
+                        <form action="/save_config" method="post">
+                            <div class="mb-3">
+                                <label for="NAME" class="form-label">Server Name</label>
+                                <input type="text" class="form-control" id="NAME" name="NAME" value="{{ server_cfg.get('NAME', '') }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="TRACK" class="form-label">Track</label>
+                                <input type="text" class="form-control" id="TRACK" name="TRACK" value="{{ server_cfg.get('TRACK', '') }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="PASSWORD" class="form-label">Password</label>
+                                <input type="text" class="form-control" id="PASSWORD" name="PASSWORD" value="{{ server_cfg.get('PASSWORD', '') }}">
+                            </div>
+                             <div class="mb-3">
+                                <label for="ADMIN_PASSWORD" class="form-label">Admin Password</label>
+                                <input type="text" class="form-control" id="ADMIN_PASSWORD" name="ADMIN_PASSWORD" value="{{ server_cfg.get('ADMIN_PASSWORD', '') }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="MAX_CLIENTS" class="form-label">Max Clients</label>
+                                <input type="number" class="form-control" id="MAX_CLIENTS" name="MAX_CLIENTS" value="{{ server_cfg.get('MAX_CLIENTS', '') }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Server Config</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">Entry List (Grid)</div>
+                    <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                        <form action="/save_entry_list" method="post">
+                            {% for car in entry_list %}
+                            <div class="border p-2 mb-2 rounded">
+                                <h6>{{ car.id }}</h6>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label class="form-label form-label-sm">Model</label>
+                                        <input type="text" class="form-control form-control-sm" name="{{ car.id }}_MODEL" value="{{ car.get('MODEL', '') }}">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label form-label-sm">Skin</label>
+                                        <input type="text" class="form-control form-control-sm" name="{{ car.id }}_SKIN" value="{{ car.get('SKIN', '') }}">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label form-label-sm">Driver Name</label>
+                                        <input type="text" class="form-control form-control-sm" name="{{ car.id }}_DRIVERNAME" value="{{ car.get('DRIVERNAME', '') }}">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label form-label-sm">GUID</label>
+                                        <input type="text" class="form-control form-control-sm" name="{{ car.id }}_GUID" value="{{ car.get('GUID', '') }}">
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary mt-2">Save Entry List</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
