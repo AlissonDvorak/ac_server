@@ -15,8 +15,8 @@ services:
       - ac_data:/ac-server # Persistent server data
     environment:
       - SERVER_NAME=AC_Docker_Server
-      - STEAM_USERNAME= # Optional: Set your Steam username if anonymous login fails
-      - STEAM_PASSWORD= # Optional: Set your Steam password if anonymous login fails
+      - STEAM_USERNAME=
+      - STEAM_PASSWORD=
     networks:
       - ac-network
 
