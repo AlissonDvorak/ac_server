@@ -32,7 +32,7 @@ RUN useradd -m -d /home/acserver -s /bin/bash acserver && \
     mkdir -p ${SERVER_DIR} && \
     chown -R acserver:acserver ${STEAMCMD_DIR} ${SERVER_DIR}
 
-COPY entrypoint.sh /entrypoint.sh
+COPY docker/ac-server/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 USER acserver

@@ -8,11 +8,10 @@ app = Flask(__name__)
 # Configuration
 CONFIG_PATH = "/data/configs"
 SERVER_CONTAINER_NAME = os.environ.get("SERVER_CONTAINER_NAME", "ac-server")
-DOCKER_SOCKET_PATH = "unix://var/run/docker.sock"
 
 # Initialize Docker Client
 try:
-    client = docker.DockerClient(base_url=DOCKER_SOCKET_PATH)
+    client = docker.from_env()
 except Exception as e:
     print(f"Error connecting to Docker: {e}")
     client = None
