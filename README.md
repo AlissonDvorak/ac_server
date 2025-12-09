@@ -53,4 +53,5 @@ You may need to adjust the volume mounts to add specific mods.
 
 - **Server not showing up**: Ensure ports 9600 TCP/UDP are open on your firewall.
 - **SteamCMD errors**: Check internet connectivity. Sometimes SteamCMD fails to update; restarting the container usually fixes it.
+- **"No subscription" error**: If you see `ERROR! Failed to install app '302550' (No subscription)`, it means anonymous download is restricted or not working. Set `STEAM_USERNAME` and `STEAM_PASSWORD` in `docker-compose.yml` with a Steam account that owns Assetto Corsa.
 - **Logs**: View logs via the Web UI or `docker logs ac-server`.
