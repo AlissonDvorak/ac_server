@@ -5,7 +5,7 @@ echo "Starting Assetto Corsa Server Container..."
 
 # Update/Install AC Server
 echo "Updating AC Server (AppID 302550)..."
-${STEAMCMD_DIR}/steamcmd.sh +force_install_dir ${SERVER_DIR} +login anonymous +app_update 302550 validate +quit
+${STEAMCMD_DIR}/steamcmd.sh +@sSteamCmdForcePlatformType windows +force_install_dir ${SERVER_DIR} +login anonymous +app_update 302550 validate +quit
 
 # Ensure config directories exist in the server folder
 mkdir -p ${SERVER_DIR}/cfg

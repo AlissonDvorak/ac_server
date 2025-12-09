@@ -1,8 +1,8 @@
 services:
   ac-server:
     build:
-      context: .
-      dockerfile: docker/ac-server/Dockerfile
+      context: docker/ac-server
+      dockerfile: Dockerfile
     container_name: ac-server
     restart: always
     ports:
