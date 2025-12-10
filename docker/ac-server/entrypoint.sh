@@ -114,12 +114,28 @@ mkdir -p ${SERVER_DIR}/logs
 # Run the server with Wine
 echo "Starting acServer.exe..."
 
+# Clean up any existing X server lock files
+rm -f /tmp/.X0-lock /tmp/.X11-unix/X0
+
 # Start Xvfb in background
 Xvfb :0 -screen 0 1024x768x16 &
+XVFB_PID=$!
 export DISPLAY=:0
 
 # Wait for Xvfb
 sleep 2
 
-# Run server
+# Run server and capture exit code
 wine ${SERVER_DIR}/acServer.exe
+EXIT_CODE=$?
+
+# Kill Xvfb on exit
+kill $XVFB_PID 2>/dev/null || true
+
+# If server crashed with panic, don't restart immediately
+if [ $EXIT_CODE -ne 0 ]; then
+    echo "Server exited with code $EXIT_CODE. Waiting 30s before container exits..."
+    sleep 30
+fi
+
+exit $EXIT_CODE
