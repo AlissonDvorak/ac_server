@@ -28,6 +28,36 @@ if [ -d "/data/configs" ]; then
     cp /data/configs/*.ini ${SERVER_DIR}/cfg/
 fi
 
+# Validate Server Config (Prevent Panic loop)
+CFG_FILE="${SERVER_DIR}/cfg/server_cfg.ini"
+if [ -f "$CFG_FILE" ]; then
+    # Check for empty TRACK
+    if grep -q "^TRACK=$" "$CFG_FILE" || ! grep -q "^TRACK=" "$CFG_FILE"; then
+        echo "WARNING: TRACK is missing or empty in server_cfg.ini. Setting default to 'imola'."
+        if grep -q "^TRACK=" "$CFG_FILE"; then
+            sed -i 's/^TRACK=.*$/TRACK=imola/' "$CFG_FILE"
+        else
+            # Append if missing (simple approach, might be out of section but usually works if section exists)
+            # Better to rely on sed if key exists. If not, we might be in trouble if [SERVER] header is missing.
+            # Assuming [SERVER] exists.
+            sed -i '/\[SERVER\]/a TRACK=imola' "$CFG_FILE"
+        fi
+    fi
+
+    # Check for empty CARS
+    if grep -q "^CARS=$" "$CFG_FILE" || ! grep -q "^CARS=" "$CFG_FILE"; then
+        echo "WARNING: CARS is missing or empty in server_cfg.ini. Setting default."
+        DEFAULT_CAR="ks_bmw_m235i_racing"
+        if grep -q "^CARS=" "$CFG_FILE"; then
+            sed -i "s/^CARS=.*$/CARS=$DEFAULT_CAR/" "$CFG_FILE"
+        else
+            sed -i "/\[SERVER\]/a CARS=$DEFAULT_CAR" "$CFG_FILE"
+        fi
+    fi
+else
+    echo "ERROR: server_cfg.ini not found!"
+fi
+
 # Handle Mods
 # We expect mods to be mounted at /data/mods
 # Structure: /data/mods/cars/[car_name] and /data/mods/tracks/[track_name]
