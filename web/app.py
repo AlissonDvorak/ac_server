@@ -7,6 +7,7 @@ app = Flask(__name__)
 
 # Configuration
 CONFIG_PATH = "/data/configs"
+CONTENT_PATH = os.environ.get("CONTENT_PATH", "/ac-server/content")
 SERVER_CONTAINER_NAME = os.environ.get("SERVER_CONTAINER_NAME", "ac-server")
 
 # Initialize Docker Client
@@ -41,6 +42,21 @@ def write_ini(filename, config):
     except Exception as e:
         print(f"Error writing {filename}: {e}")
 
+def get_available_tracks():
+    tracks = []
+    tracks_dir = os.path.join(CONTENT_PATH, "tracks")
+    if os.path.exists(tracks_dir):
+        try:
+            # List directories in content/tracks
+            for item in os.listdir(tracks_dir):
+                if os.path.isdir(os.path.join(tracks_dir, item)):
+                    tracks.append(item)
+        except Exception as e:
+            print(f"Error listing tracks: {e}")
+    else:
+        print(f"Tracks directory not found: {tracks_dir}")
+    return sorted(tracks)
+
 @app.route('/')
 def index():
     container = get_container()
@@ -61,7 +77,9 @@ def index():
             car_data['id'] = section # Store section name like CAR_0
             entry_list.append(car_data)
 
-    return render_template('index.html', status=status, server_cfg=server_cfg, entry_list=entry_list)
+    available_tracks = get_available_tracks()
+
+    return render_template('index.html', status=status, server_cfg=server_cfg, entry_list=entry_list, tracks=available_tracks)
 
 @app.route('/restart', methods=['POST'])
 def restart():

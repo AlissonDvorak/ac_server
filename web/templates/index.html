@@ -33,7 +33,15 @@
                             </div>
                             <div class="mb-3">
                                 <label for="TRACK" class="form-label">Track</label>
-                                <input type="text" class="form-control" id="TRACK" name="TRACK" value="{{ server_cfg.get('TRACK', '') }}">
+                                {% if tracks %}
+                                <select class="form-select" id="TRACK" name="TRACK">
+                                    {% for track in tracks %}
+                                    <option value="{{ track }}" {% if track == server_cfg.get('TRACK', '') %}selected{% endif %}>{{ track }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% else %}
+                                <input type="text" class="form-control" id="TRACK" name="TRACK" value="{{ server_cfg.get('TRACK', '') }}" placeholder="Enter track name manually (tracks dir not found)">
+                                {% endif %}
                             </div>
                             <div class="mb-3">
                                 <label for="PASSWORD" class="form-label">Password</label>

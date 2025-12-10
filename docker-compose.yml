@@ -31,6 +31,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./configs:/data/configs
+      - ac_data:/ac-server # Access to server data to read tracks
     environment:
       - SERVER_CONTAINER_NAME=ac-server
     depends_on:
