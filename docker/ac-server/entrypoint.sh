@@ -32,18 +32,33 @@ if [ -d "/data/configs" ]; then
     cp /data/configs/*.ini ${SERVER_DIR}/cfg/
 fi
 
-# Validate Server Config (Prevent Panic loop)
+# Validate and Fix Server Config (Prevent Panic loop)
 CFG_FILE="${SERVER_DIR}/cfg/server_cfg.ini"
 if [ -f "$CFG_FILE" ]; then
+    # Fix RACE_DURATION=0 which causes panic
+    if grep -q "^RACE_DURATION=0" "$CFG_FILE"; then
+        echo "Fixing RACE_DURATION=0 (causes server panic)"
+        sed -i 's/^RACE_DURATION=0/RACE_DURATION=20/' "$CFG_FILE"
+    fi
+    
+    # Remove PRACTICE_DURATION if it exists (can cause issues)
+    if grep -q "^PRACTICE_DURATION=" "$CFG_FILE"; then
+        echo "Removing PRACTICE_DURATION (not needed in PICKUP mode)"
+        sed -i '/^PRACTICE_DURATION=/d' "$CFG_FILE"
+    fi
+    
+    # Ensure QUALIFY_DURATION has a valid value
+    if grep -q "^QUALIFY_DURATION=0" "$CFG_FILE"; then
+        echo "Setting minimum QUALIFY_DURATION"
+        sed -i 's/^QUALIFY_DURATION=0/QUALIFY_DURATION=15/' "$CFG_FILE"
+    fi
+    
     # Check for empty TRACK
     if grep -q "^TRACK=$" "$CFG_FILE" || ! grep -q "^TRACK=" "$CFG_FILE"; then
         echo "WARNING: TRACK is missing or empty in server_cfg.ini. Setting default to 'magione'."
         if grep -q "^TRACK=" "$CFG_FILE"; then
             sed -i 's/^TRACK=.*$/TRACK=magione/' "$CFG_FILE"
         else
-            # Append if missing (simple approach, might be out of section but usually works if section exists)
-            # Better to rely on sed if key exists. If not, we might be in trouble if [SERVER] header is missing.
-            # Assuming [SERVER] exists.
             sed -i '/\[SERVER\]/a TRACK=magione' "$CFG_FILE"
         fi
     fi
@@ -60,6 +75,7 @@ if [ -f "$CFG_FILE" ]; then
     fi
 else
     echo "ERROR: server_cfg.ini not found!"
+    exit 1
 fi
 
 # Check for WEATHER_0 (Fix UpdateWeather panic)
