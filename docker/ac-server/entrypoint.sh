@@ -41,10 +41,19 @@ if [ -f "$CFG_FILE" ]; then
         sed -i 's/^RACE_DURATION=0/RACE_DURATION=20/' "$CFG_FILE"
     fi
     
-    # Remove PRACTICE_DURATION if it exists (can cause issues)
-    if grep -q "^PRACTICE_DURATION=" "$CFG_FILE"; then
-        echo "Removing PRACTICE_DURATION (not needed in PICKUP mode)"
-        sed -i '/^PRACTICE_DURATION=/d' "$CFG_FILE"
+    # Ensure PRACTICE_DURATION is valid (prevent panic)
+    if grep -q "^PRACTICE_DURATION=0" "$CFG_FILE"; then
+        echo "Fixing PRACTICE_DURATION=0"
+        sed -i 's/^PRACTICE_DURATION=0/PRACTICE_DURATION=10/' "$CFG_FILE"
+    elif ! grep -q "^PRACTICE_DURATION=" "$CFG_FILE"; then
+        echo "Adding missing PRACTICE_DURATION"
+        sed -i '/\[SERVER\]/a PRACTICE_DURATION=10' "$CFG_FILE"
+    fi
+    
+    # Ensure RACE_LAPS is present
+    if ! grep -q "^RACE_LAPS=" "$CFG_FILE"; then
+        echo "Adding missing RACE_LAPS"
+        sed -i '/\[SERVER\]/a RACE_LAPS=5' "$CFG_FILE"
     fi
     
     # Ensure QUALIFY_DURATION has a valid value
