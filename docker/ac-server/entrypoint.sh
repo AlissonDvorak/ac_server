@@ -33,21 +33,21 @@ CFG_FILE="${SERVER_DIR}/cfg/server_cfg.ini"
 if [ -f "$CFG_FILE" ]; then
     # Check for empty TRACK
     if grep -q "^TRACK=$" "$CFG_FILE" || ! grep -q "^TRACK=" "$CFG_FILE"; then
-        echo "WARNING: TRACK is missing or empty in server_cfg.ini. Setting default to 'imola'."
+        echo "WARNING: TRACK is missing or empty in server_cfg.ini. Setting default to 'magione'."
         if grep -q "^TRACK=" "$CFG_FILE"; then
-            sed -i 's/^TRACK=.*$/TRACK=imola/' "$CFG_FILE"
+            sed -i 's/^TRACK=.*$/TRACK=magione/' "$CFG_FILE"
         else
             # Append if missing (simple approach, might be out of section but usually works if section exists)
             # Better to rely on sed if key exists. If not, we might be in trouble if [SERVER] header is missing.
             # Assuming [SERVER] exists.
-            sed -i '/\[SERVER\]/a TRACK=imola' "$CFG_FILE"
+            sed -i '/\[SERVER\]/a TRACK=magione' "$CFG_FILE"
         fi
     fi
 
     # Check for empty CARS
     if grep -q "^CARS=$" "$CFG_FILE" || ! grep -q "^CARS=" "$CFG_FILE"; then
         echo "WARNING: CARS is missing or empty in server_cfg.ini. Setting default."
-        DEFAULT_CAR="ks_bmw_m235i_racing"
+        DEFAULT_CAR="abarth500"
         if grep -q "^CARS=" "$CFG_FILE"; then
             sed -i "s/^CARS=.*$/CARS=$DEFAULT_CAR/" "$CFG_FILE"
         else
