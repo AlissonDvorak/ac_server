@@ -97,6 +97,9 @@ def save_config():
     # Update server fields
     for key in request.form:
         if key in ['NAME', 'TRACK', 'PASSWORD', 'ADMIN_PASSWORD', 'MAX_CLIENTS']:
+             # Prevent empty track
+             if key == 'TRACK' and not request.form[key].strip():
+                 continue
              config['SERVER'][key] = request.form[key]
 
     write_ini('server_cfg.ini', config)
