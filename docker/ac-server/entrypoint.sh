@@ -4,17 +4,21 @@ set -e
 echo "Starting Assetto Corsa Server Container..."
 
 # Update/Install AC Server
-echo "Updating AC Server (AppID 302550)..."
-
-if [ -z "$STEAM_USERNAME" ]; then
-    echo "Using anonymous login..."
-    STEAM_LOGIN="+login anonymous"
+if [ -f "${SERVER_DIR}/acServer.exe" ] && [ -z "$FORCE_UPDATE" ]; then
+    echo "AC Server found. Skipping update to avoid rate limits. Set FORCE_UPDATE=1 to force update."
 else
-    echo "Using provided Steam credentials..."
-    STEAM_LOGIN="+login ${STEAM_USERNAME} ${STEAM_PASSWORD}"
-fi
+    echo "Updating AC Server (AppID 302550)..."
 
-${STEAMCMD_DIR}/steamcmd.sh +@sSteamCmdForcePlatformType windows +force_install_dir ${SERVER_DIR} $STEAM_LOGIN +app_update 302550 validate +quit
+    if [ -z "$STEAM_USERNAME" ]; then
+        echo "Using anonymous login..."
+        STEAM_LOGIN="+login anonymous"
+    else
+        echo "Using provided Steam credentials..."
+        STEAM_LOGIN="+login ${STEAM_USERNAME} ${STEAM_PASSWORD}"
+    fi
+
+    ${STEAMCMD_DIR}/steamcmd.sh +@sSteamCmdForcePlatformType windows +force_install_dir ${SERVER_DIR} $STEAM_LOGIN +app_update 302550 validate +quit
+fi
 
 # Ensure config directories exist in the server folder
 mkdir -p ${SERVER_DIR}/cfg
