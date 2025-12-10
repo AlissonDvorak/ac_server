@@ -58,6 +58,20 @@ else
     echo "ERROR: server_cfg.ini not found!"
 fi
 
+# Check for WEATHER_0 (Fix UpdateWeather panic)
+if [ -f "$CFG_FILE" ] && ! grep -q "\[WEATHER_0\]" "$CFG_FILE"; then
+    echo "WARNING: WEATHER_0 missing in server_cfg.ini. Appending default weather."
+    cat <<EOF >> "$CFG_FILE"
+
+[WEATHER_0]
+GRAPHICS=3_clear
+BASE_TEMPERATURE_AMBIENT=26
+BASE_TEMPERATURE_ROAD=11
+VARIATION_AMBIENT=1
+VARIATION_ROAD=1
+EOF
+fi
+
 # Handle Mods
 # We expect mods to be mounted at /data/mods
 # Structure: /data/mods/cars/[car_name] and /data/mods/tracks/[track_name]
