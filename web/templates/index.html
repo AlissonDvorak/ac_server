@@ -44,6 +44,19 @@
                                 {% endif %}
                             </div>
                             <div class="mb-3">
+                                <label for="CARS" class="form-label">Default Car (Server)</label>
+                                {% if cars %}
+                                <select class="form-select" id="CARS" name="CARS">
+                                    {% for car in cars %}
+                                    <option value="{{ car }}" {% if car == server_cfg.get('CARS', '') %}selected{% endif %}>{{ car }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% else %}
+                                <input type="text" class="form-control" id="CARS" name="CARS" value="{{ server_cfg.get('CARS', '') }}" placeholder="Enter car model manually">
+                                {% endif %}
+                                <div class="form-text">Sets the main car list for the server.</div>
+                            </div>
+                            <div class="mb-3">
                                 <label for="PASSWORD" class="form-label">Password</label>
                                 <input type="text" class="form-control" id="PASSWORD" name="PASSWORD" value="{{ server_cfg.get('PASSWORD', '') }}">
                             </div>
@@ -72,7 +85,15 @@
                                 <div class="row g-2">
                                     <div class="col-6">
                                         <label class="form-label form-label-sm">Model</label>
+                                        {% if cars %}
+                                        <select class="form-select form-select-sm" name="{{ car.id }}_MODEL">
+                                            {% for c in cars %}
+                                            <option value="{{ c }}" {% if c == car.get('MODEL', '') %}selected{% endif %}>{{ c }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        {% else %}
                                         <input type="text" class="form-control form-control-sm" name="{{ car.id }}_MODEL" value="{{ car.get('MODEL', '') }}">
+                                        {% endif %}
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label form-label-sm">Skin</label>

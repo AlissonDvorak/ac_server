@@ -6,7 +6,7 @@ import configparser
 app = Flask(__name__)
 
 # Configuration
-CONFIG_PATH = "/data/configs"
+CONFIG_PATH = os.environ.get("CONFIG_PATH", "/data/configs")
 CONTENT_PATH = os.environ.get("CONTENT_PATH", "/ac-server/content")
 SERVER_CONTAINER_NAME = os.environ.get("SERVER_CONTAINER_NAME", "ac-server")
 
@@ -57,6 +57,20 @@ def get_available_tracks():
         print(f"Tracks directory not found: {tracks_dir}")
     return sorted(tracks)
 
+def get_available_cars():
+    cars = []
+    cars_dir = os.path.join(CONTENT_PATH, "cars")
+    if os.path.exists(cars_dir):
+        try:
+            for item in os.listdir(cars_dir):
+                if os.path.isdir(os.path.join(cars_dir, item)):
+                    cars.append(item)
+        except Exception as e:
+            print(f"Error listing cars: {e}")
+    else:
+        print(f"Cars directory not found: {cars_dir}")
+    return sorted(cars)
+
 @app.route('/')
 def index():
     container = get_container()
@@ -78,8 +92,9 @@ def index():
             entry_list.append(car_data)
 
     available_tracks = get_available_tracks()
+    available_cars = get_available_cars()
 
-    return render_template('index.html', status=status, server_cfg=server_cfg, entry_list=entry_list, tracks=available_tracks)
+    return render_template('index.html', status=status, server_cfg=server_cfg, entry_list=entry_list, tracks=available_tracks, cars=available_cars)
 
 @app.route('/restart', methods=['POST'])
 def restart():
@@ -96,7 +111,7 @@ def save_config():
 
     # Update server fields
     for key in request.form:
-        if key in ['NAME', 'TRACK', 'PASSWORD', 'ADMIN_PASSWORD', 'MAX_CLIENTS']:
+        if key in ['NAME', 'TRACK', 'CARS', 'PASSWORD', 'ADMIN_PASSWORD', 'MAX_CLIENTS']:
              # Prevent empty track
              if key == 'TRACK' and not request.form[key].strip():
                  continue
